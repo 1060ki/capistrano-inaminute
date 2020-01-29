@@ -28,4 +28,14 @@ class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
       end
     end
   end
+
+  def is_changed?(path)
+    changed_files.any? { |p| p == path }
+  end
+
+  private
+
+  def changed_files
+    @changed_files ||= (capture :git, "ls-files", "-m").split
+  end
 end
