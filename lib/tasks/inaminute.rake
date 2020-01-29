@@ -45,6 +45,16 @@ namespace :inaminute do
       end
     end
   end
+
+  namespace :db do
+    task :migrate do
+      inaminute_rails.db_migrate
+    end
+
+    task :seed do
+      inaminute_rails.db_seed
+    end
+  end
 end
 
 namespace :load do
