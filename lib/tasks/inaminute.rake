@@ -11,12 +11,16 @@ namespace :inaminute do
   end
 
   namespace :git do
-    task :clone_code do
-      inaminute_git.clone_code
+    task :check do
+      inaminute_git.check
     end
 
-    task :update_code do
-      inaminute_git.update_code
+    task :create_release do
+      inaminute_git.create_release
+    end
+
+    task :set_current_revision do
+      inaminute_git.set_current_revision
     end
 
     task :tag do
