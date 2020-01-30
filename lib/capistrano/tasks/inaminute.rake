@@ -10,21 +10,48 @@ namespace :inaminute do
     @inaminute_rails ||= Capistrano::Inaminute::Rails.new(self)
   end
 
+  task :setup do
+    invoke "inaminute:git:create_release"
+    invoke "inaminute:git:clone"
+    invoke "inaminute:git:set_current_revision"
+  end
+
   namespace :git do
     task :check do
-      inaminute_git.check
+      run_locally do
+        inaminute_git.check
+      end
     end
 
     task :create_release do
-      inaminute_git.create_release
+      run_locally do
+        inaminute_git.create_release
+      end
     end
 
     task :set_current_revision do
-      inaminute_git.set_current_revision
+      run_locally do
+        inaminute_git.set_current_revision
+      end
     end
+    before "deploy:set_current_revision", "inaminute:git:set_current_revision"
 
     task :tag do
-      inaminute_git.tag
+      run_locally do
+        inaminute_git.tag
+      end
+    end
+
+    task :clone do
+      run_locally do
+        inaminute_git.clone
+      end
+    end
+
+    task :update do
+      run_locally do
+        inaminute_git.update
+      end
     end
   end
 
@@ -63,6 +90,7 @@ end
 
 namespace :load do
   task :defaults do
+    set :inaminute_release_tag, Time.now.strftime("%Y%m%d%H%M%S")
     set :inaminute_bundle_install_triggers, %w{Gemfile Gemfile.lock}
     set :inaminute_bundle_install_opts, %w{--deployment --path vendor/bundle --without test development}
     set :inaminute_assets_precompilation_triggers, %w{app/assets config Gemfile.lock}

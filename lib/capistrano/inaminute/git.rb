@@ -3,35 +3,31 @@ require 'capistrano/inaminute/base'
 class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
   def check
     exit 1 unless execute("git ls-remote #{repo_url} HEAD")
-    execute :mkdir, "-p", fetch(:deploy_to)
+  end
+
+  def create_release
+    execute :mkdir, "-p", fetch(:inaminute_local_release_path)
   end
 
   def clone
-    hosts = release_roles(:all)
-    on hosts do
-      within release_path do
-        execute :git, "clone", fetch(:repo_url), fetch(:deploy_to)
-        execute :git, "reset", "--hard", "origin/#{fetch(:branch)}"
-      end
+    within fetch(:inaminute_local_release_path) do
+      execute :git, "clone", fetch(:repo_url), fetch(:inaminute_local_release_path)
+      execute :git, "reset", "--hard", "origin/#{fetch(:branch)}"
     end
   end
 
   def update
     hosts = release_roles(:all)
     on hosts do
-      within release_path do
+      within fetch(:inaminute_local_release_path) do
         execute :git, "fetch"
         execute :git, "reset", "--hard", "origin/#{fetch(:branch)}"
       end
     end
   end
 
-  def create_release
-    execute :mkdir, "-p", release_path
-  end
-
   def set_current_revision
-    within release_path do
+    within fetch(:inaminute_local_release_path) do
       set :current_revision, capture(:git, "rev-list --max-count=1 #{fetch(:branch)}")
     end
   end
@@ -39,8 +35,8 @@ class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
   def tag
     hosts = release_roles(:all)
     on hosts do
-      within release_path do
-        execute :git, "tag", release_tag
+      within fetch(:inaminute_local_release_path) do
+        execute :git, "tag", fetch(:inaminute_release_tag)
       end
     end
   end
