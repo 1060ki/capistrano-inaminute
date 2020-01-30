@@ -1,6 +1,8 @@
 require 'capistrano/inaminute/git'
 require 'capistrano/inaminute/bundler'
 require 'capistrano/inaminute/rails'
+require 'capistrano/inaminute/rsync'
+require 'parallel'
 
 namespace :inaminute do
   def inaminute_git
@@ -13,6 +15,10 @@ namespace :inaminute do
 
   def inaminute_rails
     @inaminute_rails ||= Capistrano::Inaminute::Rails.new(self)
+  end
+
+  def inaminute_rsync
+    @inaminute_rsync ||= Capistrano::Inaminute::Rsync.new(self)
   end
 
   task :setup do
@@ -97,6 +103,12 @@ namespace :inaminute do
       end
     end
   end
+
+  task :rsync do
+    run_locally do
+      inaminute_rsync.rsync
+    end
+  end
 end
 
 namespace :load do
@@ -105,5 +117,6 @@ namespace :load do
     set :inaminute_bundle_install_triggers, %w{Gemfile Gemfile.lock}
     set :inaminute_bundle_install_opts, %w{--deployment --path vendor/bundle --without test development}
     set :inaminute_assets_precompilation_triggers, %w{app/assets config Gemfile.lock}
+    set :inaminute_max_parallel_hosts, release_roles(:all, exclude: :build)
   end
 end
