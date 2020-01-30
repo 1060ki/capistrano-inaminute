@@ -1,3 +1,5 @@
+require 'capistrano/inaminute/base'
+
 class Capistrano::Inaminute::Bundler < Capistrano::Inaminute::Base
   def install
     hosts = release_roles(:all)

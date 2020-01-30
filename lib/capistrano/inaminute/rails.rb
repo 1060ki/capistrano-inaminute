@@ -1,3 +1,5 @@
+require 'capistrano/inaminute/base'
+
 class Capistrano::Inaminute::Rails < Capistrano::Inaminute::Base
   def assets_precompile
     hosts = release_roles(:all)

@@ -1,3 +1,5 @@
+require 'capistrano/inaminute/base'
+
 class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
   def check
     exit 1 unless execute("git ls-remote #{repo_url} HEAD")
