@@ -1,10 +1,6 @@
 require 'capistrano/inaminute/base'
 
 class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
-  def check
-    exit 1 unless execute("git ls-remote #{repo_url} HEAD")
-  end
-
   def create_release
     execute :mkdir, "-p", fetch(:inaminute_local_release_path)
   end

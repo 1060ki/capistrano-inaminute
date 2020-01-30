@@ -17,12 +17,6 @@ namespace :inaminute do
   end
 
   namespace :git do
-    task :check do
-      run_locally do
-        inaminute_git.check
-      end
-    end
-
     task :create_release do
       run_locally do
         inaminute_git.create_release

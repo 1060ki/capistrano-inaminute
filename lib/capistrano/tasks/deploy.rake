@@ -1,6 +1,5 @@
 namespace :deploy do
   task :starting do
-    invoke "inaminute:git:check"
     invoke "inaminute:git:create_release"
   end
 
