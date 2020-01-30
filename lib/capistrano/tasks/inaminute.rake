@@ -59,7 +59,7 @@ namespace :inaminute do
   namespace :bundle do
     task :install do
       trigger_changed = fetch(:inaminute_bundle_install_triggers).any? { |path| inaminute_git.is_changed?(path) }
-      if trigger_changed
+      if fetch(:inaminute_force_full_deploy) || trigger_changed
         run_locally do
           inaminute_bundler.install
         end
@@ -71,7 +71,7 @@ namespace :inaminute do
   namespace :assets do
     task :precompile do
       trigger_changed = fetch(:inaminute_assets_precompilation_triggers).any? { |path| inaminute_git.is_changed?(path) }
-      if trigger_changed
+      if fetch(:inaminute_force_full_deploy) || trigger_changed
         run_locally do
           inaminute_rails.assets_precompile
         end
