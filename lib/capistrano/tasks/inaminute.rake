@@ -47,6 +47,13 @@ namespace :inaminute do
         inaminute_git.update
       end
     end
+
+    task :set_changed_files do
+      run_locally do
+        set :changed_files, capture(:git, "ls-files", "-m").split
+      end
+    end
+    after "deploy:updated", "inaminute:git:set_changed_files"
   end
 
   namespace :bundle do
@@ -54,19 +61,16 @@ namespace :inaminute do
       trigger_changed = fetch(:inaminute_bundle_install_triggers).any? { |path| inaminute_git.is_changed?(path) }
       if trigger_changed
         inaminute_bundler.install
-      else
-        info "Skip `bundle install`. No change found in any of the triggers configured by `set :inaminute_bundle_install_triggers`"
       end
     end
   end
+  after "deploy:updated", "inaminute:bundle:install"
 
   namespace :assets do
     task :precompile do
       trigger_changed = fetch(:inaminute_assets_precompilation_triggers).any? { |path| inaminute_git.is_changed?(path) }
       if trigger_changed
         inaminute_rails.assets_precompile
-      else
-        info "Skip `rake assets:precompile`. No change found in any of the triggers configured by `set :inaminute_assets_precompilation_triggers`"
       end
     end
   end
