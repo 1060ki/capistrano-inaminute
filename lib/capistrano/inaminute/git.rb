@@ -24,7 +24,7 @@ class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
 
   def set_current_revision
     within fetch(:inaminute_local_release_path) do
-      set :current_revision, capture(:git, "rev-list --max-count=1 #{fetch(:branch)}")
+      set :current_revision, capture(:git, "rev-parse HEAD")
     end
   end
 
