@@ -1,9 +1,14 @@
 require 'capistrano/inaminute/git'
+require 'capistrano/inaminute/bundler'
 require 'capistrano/inaminute/rails'
 
 namespace :inaminute do
   def inaminute_git
     @inaminute_git ||= Capistrano::Inaminute::Git.new(self)
+  end
+
+  def inaminute_bundler
+    @inaminute_bundler ||= Capistrano::Inaminute::Bundler.new(self)
   end
 
   def inaminute_rails
