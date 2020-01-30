@@ -13,12 +13,9 @@ class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
   end
 
   def update
-    hosts = release_roles(:all)
-    on hosts do
-      within fetch(:inaminute_local_release_path) do
-        execute :git, "fetch"
-        execute :git, "reset", "--hard", "origin/#{fetch(:branch)}"
-      end
+    within fetch(:inaminute_local_release_path) do
+      execute :git, "fetch"
+      execute :git, "reset", "--hard", "origin/#{fetch(:branch)}"
     end
   end
 
@@ -29,11 +26,8 @@ class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
   end
 
   def tag
-    hosts = release_roles(:all)
-    on hosts do
-      within fetch(:inaminute_local_release_path) do
-        execute :git, "tag", fetch(:inaminute_release_tag)
-      end
+    within fetch(:inaminute_local_release_path) do
+      execute :git, "tag", fetch(:inaminute_release_tag)
     end
   end
 

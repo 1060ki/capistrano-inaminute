@@ -18,7 +18,7 @@ namespace :inaminute do
 
   namespace :git do
     task :create_release do
-      run_locally do
+      on release_roles(:all) do
         inaminute_git.create_release
       end
     end
@@ -60,7 +60,9 @@ namespace :inaminute do
     task :install do
       trigger_changed = fetch(:inaminute_bundle_install_triggers).any? { |path| inaminute_git.is_changed?(path) }
       if trigger_changed
-        inaminute_bundler.install
+        run_locally do
+          inaminute_bundler.install
+        end
       end
     end
   end
@@ -70,18 +72,24 @@ namespace :inaminute do
     task :precompile do
       trigger_changed = fetch(:inaminute_assets_precompilation_triggers).any? { |path| inaminute_git.is_changed?(path) }
       if trigger_changed
-        inaminute_rails.assets_precompile
+        run_locally do
+          inaminute_rails.assets_precompile
+        end
       end
     end
   end
 
   namespace :db do
     task :migrate do
-      inaminute_rails.db_migrate
+      on primary fetch(:migration_role) do
+        inaminute_rails.db_migrate
+      end
     end
 
     task :seed do
-      inaminute_rails.db_seed
+      on primary fetch(:migration_role) do
+        inaminute_rails.db_seed
+      end
     end
   end
 end
