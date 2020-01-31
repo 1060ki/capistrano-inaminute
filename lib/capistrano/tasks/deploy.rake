@@ -13,7 +13,7 @@ namespace :deploy do
   end
 
   task :set_current_revision do
-    run_locally do
+    on roles(:build) do
       within fetch(:inaminute_local_release_path) do
         execute :echo, "\"#{fetch(:current_revision)}\" > REVISION"
       end

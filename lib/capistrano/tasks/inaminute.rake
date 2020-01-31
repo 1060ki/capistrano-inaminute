@@ -35,32 +35,32 @@ namespace :inaminute do
     end
 
     task :set_current_revision do
-      run_locally do
+      on roles(:build) do
         inaminute_git.set_current_revision
       end
     end
     before "deploy:set_current_revision", "inaminute:git:set_current_revision"
 
     task :tag do
-      run_locally do
+      on roles(:build) do
         inaminute_git.tag
       end
     end
 
     task :clone do
-      run_locally do
+      on roles(:build) do
         inaminute_git.clone
       end
     end
 
     task :update do
-      run_locally do
+      on roles(:build) do
         inaminute_git.update
       end
     end
 
     task :set_changed_files do
-      run_locally do
+      on roles(:build) do
         set :changed_files, capture(:git, "ls-files", "-m").split
       end
     end
@@ -71,7 +71,7 @@ namespace :inaminute do
     task :install do
       trigger_changed = fetch(:inaminute_bundle_install_triggers).any? { |path| inaminute_git.is_changed?(path) }
       if fetch(:inaminute_force_full_deploy) || trigger_changed
-        run_locally do
+        on roles(:build) do
           inaminute_bundler.install
         end
       end
@@ -83,7 +83,7 @@ namespace :inaminute do
     task :precompile do
       trigger_changed = fetch(:inaminute_assets_precompilation_triggers).any? { |path| inaminute_git.is_changed?(path) }
       if fetch(:inaminute_force_full_deploy) || trigger_changed
-        run_locally do
+        on roles(:build) do
           inaminute_rails.assets_precompile
         end
       end
@@ -105,7 +105,7 @@ namespace :inaminute do
   end
 
   task :rsync do
-    run_locally do
+    on roles(:build) do
       inaminute_rsync.rsync
     end
   end
