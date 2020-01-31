@@ -109,6 +109,7 @@ namespace :inaminute do
       inaminute_rsync.rsync
     end
   end
+  before "deploy:publishing", "inaminute:rsync"
 end
 
 namespace :load do
@@ -117,6 +118,6 @@ namespace :load do
     set :inaminute_bundle_install_triggers, %w{Gemfile Gemfile.lock}
     set :inaminute_bundle_install_opts, %w{--deployment --path vendor/bundle --without test development}
     set :inaminute_assets_precompilation_triggers, %w{app/assets config Gemfile.lock}
-    set :inaminute_max_parallel_hosts, release_roles(:all, exclude: :build)
+    set :inaminute_max_parallel_hosts, release_roles(:web).size
   end
 end
