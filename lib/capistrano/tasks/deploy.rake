@@ -4,7 +4,11 @@ namespace :deploy do
   end
 
   task :updating do
-    invoke "inaminute:git:update"
+    if fetch(:inaminute_first_deploy)
+      invoke "inaminute:git:clone"
+    else
+      invoke "inaminute:git:update"
+    end
     invoke "deploy:set_current_revision"
   end
 

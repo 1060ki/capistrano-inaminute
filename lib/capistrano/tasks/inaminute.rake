@@ -21,10 +21,10 @@ namespace :inaminute do
     @inaminute_rsync ||= Capistrano::Inaminute::Rsync.new(self)
   end
 
-  task :setup do
-    invoke "inaminute:git:create_release"
-    invoke "inaminute:git:clone"
-    invoke "inaminute:git:set_current_revision"
+  task :first_deploy do
+    set :inaminute_first_deploy, true
+    set :inaminute_force_full_deploy, true
+    invoke "deploy"
   end
 
   namespace :git do
