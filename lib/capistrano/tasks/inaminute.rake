@@ -61,7 +61,9 @@ namespace :inaminute do
 
     task :set_changed_files do
       on roles(:build) do
-        set :changed_files, capture(:git, "ls-files", "-m").split
+        within fetch(:inaminute_local_release_path) do
+          set :changed_files, capture(:git, "ls-files", "-m").split
+        end
       end
     end
     after "deploy:updated", "inaminute:git:set_changed_files"
