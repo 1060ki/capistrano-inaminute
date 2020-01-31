@@ -1,36 +1,49 @@
 # Capistrano::Inaminute
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/capistrano/inaminute`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
-
 Add this line to your application's Gemfile:
 
-```ruby
-gem 'capistrano-inaminute'
+```
+gem 'capistrano-inaminute', git: 'git@github.com:grezar/capistrano-inaminute.git'
 ```
 
 And then execute:
 
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install capistrano-inaminute
+```
+bundle
+```
 
 ## Usage
+Capistrano 3.7+ is required.
 
-TODO: Write usage instructions here
+```Capfile
+require 'capistrano/setup'
 
-## Development
+require 'capistrano/inaminute/plugin'
+install_plugin Capistrano::Inaminute::Plugin
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+NOTE: Don't do `require 'capistrano/deploy'`. This will load default Capistrano tasks but capistrano-inaminute doesn't work with them.
 
-## Contributing
+Edit config/deploy.rb as follow
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/capistrano-inaminute.
+```
+set :application, "example"
+set :repo_url, "git@github.com:grezar/capistrano-inaminute.git"
+set :branch, ENV["BRANCH"] || "master"
+set :deploy_to, "#{ENV["HOME"]}/#{fetch(:application)}"
 
+set :inaminute_local_release_path, fetch(:deploy_to)
+```
+
+and also the stage file like config/deploy/example.rb
+
+```
+server 'build', roles: %w(build)
+server 'app', roles: %w(web)
+```
+
+capistrano-inaminute execute every build step (e.g. `bundle install`, `rake assets:precompile`) on a server had the "build" role.
+The role "web" is where the application is actually deployed.
