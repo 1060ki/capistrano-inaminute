@@ -1,5 +1,7 @@
 require "capistrano/setup"
 
+require "capistrano/rbenv"
+
 require "capistrano/inaminute/plugin"
 install_plugin Capistrano::Inaminute::Plugin
 
