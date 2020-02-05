@@ -61,21 +61,21 @@ namespace :inaminute do
 
     task :set_changed_files do
       on roles(:build) do
-        within fetch(:inaminute_local_release_path) do
-          set :changed_files, capture(:git, "ls-files", "-m").split
-        end
+        inaminute_git.set_changed_files
       end
     end
-    after "deploy:updated", "inaminute:git:set_changed_files"
+
+    task :set_latest_tag do
+      on roles(:build) do
+        inaminute_git.set_latest_tag
+      end
+    end
   end
 
   namespace :bundle do
     task :install do
-      trigger_changed = fetch(:inaminute_bundle_install_triggers).any? { |path| inaminute_git.is_changed?(path) }
-      if fetch(:inaminute_force_full_deploy) || trigger_changed
-        on roles(:build) do
-          inaminute_bundler.install
-        end
+      on roles(:build) do
+        inaminute_bundler.install
       end
     end
   end
@@ -83,8 +83,7 @@ namespace :inaminute do
 
   namespace :assets do
     task :precompile do
-      trigger_changed = fetch(:inaminute_assets_precompilation_triggers).any? { |path| inaminute_git.is_changed?(path) }
-      if fetch(:inaminute_force_full_deploy) || trigger_changed
+      if inaminute_git.have_diff? fetch(:inaminute_assets_precompilation_triggers)
         on roles(:build) do
           inaminute_rails.assets_precompile
         end
