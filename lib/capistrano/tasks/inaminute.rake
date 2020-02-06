@@ -70,12 +70,26 @@ namespace :inaminute do
         inaminute_git.set_latest_tag
       end
     end
+
+    task :delete_latest_tag do
+      on roles(:build) do
+        inaminute_git.delete_latest_tag
+      end
+    end
+
+    task :revert do
+      on roles(:build) do
+        inaminute_git.revert_to_latest_tag
+      end
+    end
   end
 
   namespace :bundle do
     task :install do
-      on roles(:build) do
-        inaminute_bundler.install
+      if inaminute_git.have_diff? fetch(:inaminute_bundle_install_triggers)
+        on roles(:build) do
+          inaminute_bundler.install
+        end
       end
     end
   end

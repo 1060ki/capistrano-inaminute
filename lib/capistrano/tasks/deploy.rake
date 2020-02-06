@@ -12,10 +12,14 @@ namespace :deploy do
     invoke "inaminute:git:set_latest_tag"
     invoke "inaminute:git:set_changed_files"
     invoke "deploy:set_current_revision"
+    invoke "inaminute:git:tag"
   end
 
-  task :finishing do
-    invoke "inaminute:git:tag"
+  task :reverting do
+    invoke "inaminute:git:set_latest_tag"
+    invoke "inaminute:git:delete_latest_tag"
+    invoke! "inaminute:git:set_latest_tag"
+    invoke "inaminute:git:revert"
   end
 
   task :set_current_revision do

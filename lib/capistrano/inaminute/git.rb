@@ -55,7 +55,23 @@ class Capistrano::Inaminute::Git < Capistrano::Inaminute::Base
 
   def set_latest_tag
     within fetch(:inaminute_local_release_path) do
-      set_if_empty :latest_tag, capture(:git, "tag").split.select { |t| t.start_with?(GIT_TAG_PREFIX) }.last
+      set :latest_tag, capture(:git, "tag").split.select { |t| t.start_with?(GIT_TAG_PREFIX) }.last
+    end
+  end
+
+  def revert_to_latest_tag
+    within fetch(:inaminute_local_release_path) do
+      if fetch(:latest_tag)
+        execute :git, "reset", "--hard", fetch(:latest_tag)
+      else
+        info "Nothing to do. This may be the first release due to any git tag is not found"
+      end
+    end
+  end
+
+  def delete_latest_tag
+    within fetch(:inaminute_local_release_path) do
+      execute :git, "tag", "-d", fetch(:latest_tag) if fetch(:latest_tag)
     end
   end
 end
