@@ -1,6 +1,5 @@
 require 'capistrano/inaminute/git'
 require 'capistrano/inaminute/bundler'
-require 'capistrano/inaminute/rails'
 require 'capistrano/inaminute/rsync'
 require 'parallel'
 
@@ -11,10 +10,6 @@ namespace :inaminute do
 
   def inaminute_bundler
     @inaminute_bundler ||= Capistrano::Inaminute::Bundler.new(self)
-  end
-
-  def inaminute_rails
-    @inaminute_rails ||= Capistrano::Inaminute::Rails.new(self)
   end
 
   def inaminute_rsync
@@ -98,30 +93,6 @@ namespace :inaminute do
   end
   after "deploy:updated", "inaminute:bundle:install"
 
-  namespace :assets do
-    task :precompile do
-      if inaminute_git.have_diff? fetch(:inaminute_assets_precompilation_triggers)
-        on roles(:build) do
-          inaminute_rails.assets_precompile
-        end
-      end
-    end
-  end
-
-  namespace :db do
-    task :migrate do
-      on primary fetch(:migration_role) do
-        inaminute_rails.db_migrate
-      end
-    end
-
-    task :seed do
-      on primary fetch(:migration_role) do
-        inaminute_rails.db_seed
-      end
-    end
-  end
-
   task :rsync do
     on roles(:build) do
       inaminute_rsync.rsync
@@ -135,7 +106,6 @@ namespace :load do
     set :inaminute_release_tag, Time.now.strftime("%Y%m%d%H%M%S")
     set :inaminute_bundle_install_triggers, %w{Gemfile Gemfile.lock}
     set :inaminute_bundle_install_opts, %w{--deployment --path vendor/bundle --without test development}
-    set :inaminute_assets_precompilation_triggers, %w{app/assets config Gemfile.lock}
     set :inaminute_max_parallel_hosts, release_roles(:web).size
   end
 end
