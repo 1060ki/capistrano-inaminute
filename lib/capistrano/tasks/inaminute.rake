@@ -21,10 +21,13 @@ namespace :inaminute do
     @inaminute_rsync ||= Capistrano::Inaminute::Rsync.new(self)
   end
 
-  task :first_deploy do
-    set :inaminute_first_deploy, true
-    set :inaminute_force_full_deploy, true
-    invoke "deploy"
+  task :check_local_release_path do
+    on release_roles(:build) do
+      if test "[ ! -d #{fetch(:inaminute_local_release_path)} ]"
+        info "First deploy"
+        set :inaminute_first_deploy, true
+      end
+    end
   end
 
   namespace :git do

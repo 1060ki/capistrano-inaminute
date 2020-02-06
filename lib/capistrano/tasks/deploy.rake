@@ -1,11 +1,13 @@
 namespace :deploy do
   task :starting do
+    invoke "inaminute:check_local_release_path"
     invoke "inaminute:git:create_release"
   end
 
   task :updating do
     if fetch(:inaminute_first_deploy)
       invoke "inaminute:git:clone"
+      set :inaminute_force_full_deploy, true
     else
       invoke "inaminute:git:update"
     end
