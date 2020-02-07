@@ -4,6 +4,8 @@ require 'capistrano/inaminute/rsync'
 require 'parallel'
 
 namespace :inaminute do
+  class BuildServerNotFoundError < StandardError; end
+
   def inaminute_git
     @inaminute_git ||= Capistrano::Inaminute::Git.new(self)
   end
@@ -16,11 +18,19 @@ namespace :inaminute do
     @inaminute_rsync ||= Capistrano::Inaminute::Rsync.new(self)
   end
 
-  task :check_local_release_path do
-    on release_roles(:build) do
-      if test "[ ! -d #{fetch(:inaminute_local_release_path)} ]"
-        info "First deploy"
-        set :inaminute_first_deploy, true
+  namespace :check do
+    task :build_server do
+      if release_roles(:build).empty?
+        raise BuildServerNotFoundError, "Server to run build tasks not found. One of the servers has to have the role `build`."
+      end
+    end
+
+    task :local_release_path do
+      on release_roles(:build) do
+        if test "[ ! -d #{fetch(:inaminute_local_release_path)} ]"
+          info "First deploy"
+          set :inaminute_first_deploy, true
+        end
       end
     end
   end
