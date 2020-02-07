@@ -106,6 +106,5 @@ namespace :load do
     set :inaminute_release_tag, Time.now.strftime("%Y%m%d%H%M%S")
     set :inaminute_bundle_install_triggers, %w{Gemfile Gemfile.lock}
     set :inaminute_bundle_install_opts, %w{--deployment --path vendor/bundle --without test development}
-    set :inaminute_max_parallel_hosts, roles(fetch(:inaminute_release_roles)).size
   end
 end
