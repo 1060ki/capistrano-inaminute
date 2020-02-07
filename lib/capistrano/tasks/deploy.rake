@@ -1,6 +1,7 @@
 namespace :deploy do
   task :starting do
-    invoke "inaminute:check_local_release_path"
+    invoke "inaminute:check:build_server"
+    invoke "inaminute:check:local_release_path"
     invoke "inaminute:git:create_release"
   end
 
