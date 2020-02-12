@@ -108,7 +108,6 @@ namespace :inaminute do
       inaminute_rsync.rsync
     end
   end
-  before "deploy:publishing", "inaminute:rsync"
 end
 
 namespace :load do
